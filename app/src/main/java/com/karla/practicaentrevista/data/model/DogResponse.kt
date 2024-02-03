@@ -1,4 +1,4 @@
-package com.karla.practicaentrevista
+package com.karla.practicaentrevista.data.model
 
 import com.google.gson.annotations.SerializedName
 

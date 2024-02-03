@@ -1,4 +1,4 @@
-package com.karla.practicaentrevista
+package com.karla.practicaentrevista.ui
 
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
