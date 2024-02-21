@@ -1,8 +1,9 @@
-package com.karla.practicaentrevista
+package com.karla.practicaentrevista.ui.view.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.karla.practicaentrevista.R
 
 class DogAdapter(private val images:List<String>): RecyclerView.Adapter<DogViewHolder>() {
 

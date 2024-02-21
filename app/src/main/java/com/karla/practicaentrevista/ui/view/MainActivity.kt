@@ -1,16 +1,15 @@
-package com.karla.practicaentrevista
+package com.karla.practicaentrevista.ui.view
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.SearchView
-import android.widget.Toast
+import androidx.core.view.isVisible
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.karla.practicaentrevista.ui.view.adapter.DogAdapter
 import com.karla.practicaentrevista.databinding.ActivityMainBinding
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
+import com.karla.practicaentrevista.ui.viewmodel.DogViewModel
 
 class MainActivity : AppCompatActivity(), SearchView.OnQueryTextListener,
     androidx.appcompat.widget.SearchView.OnQueryTextListener {
@@ -19,11 +18,25 @@ class MainActivity : AppCompatActivity(), SearchView.OnQueryTextListener,
     private lateinit var adapter: DogAdapter
     private val dogImages = mutableListOf<String>()
 
+    private lateinit var dogViewModel: DogViewModel
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         binding.txtSearch.setOnQueryTextListener(this)
+
+        dogViewModel = ViewModelProvider(this).get(DogViewModel::class.java)
+
+        dogViewModel.dogImages.observe(this, Observer { images ->
+            dogImages.clear()
+            dogImages.addAll(images)
+            adapter.notifyDataSetChanged()
+        })
+
+        dogViewModel.isLoading.observe(this, Observer{
+            binding.progress.isVisible = it
+        })
 
         initRecyclerView()
     }
@@ -34,29 +47,9 @@ class MainActivity : AppCompatActivity(), SearchView.OnQueryTextListener,
         binding.rvDogs.adapter = adapter
     }
 
-    private fun getRetrofit():Retrofit{
-        return Retrofit.Builder().baseUrl("https://dog.ceo/api/breed/")
-            .addConverterFactory(GsonConverterFactory.create()).build()
-    }
-
     private fun searchByName (query: String){
-        CoroutineScope(Dispatchers.IO).launch {
-            val call = getRetrofit().create(ApiService::class.java).getDogsByBreeds("$query/images")
-            val puppies = call.body()
+        dogViewModel.searchDogsByBreed(query.toLowerCase())
 
-            runOnUiThread{
-                if(call.isSuccessful){
-                    //Show recycler view
-                    val images : List<String> = puppies?.images ?: emptyList()
-                    dogImages.clear()
-                    dogImages.addAll(images)
-                    adapter.notifyDataSetChanged()
-                }else{
-                    Toast.makeText(this@MainActivity,"No se encontraron datos", Toast.LENGTH_LONG).show()
-                }
-            }
-
-        }
     }
 
     override fun onQueryTextSubmit(query: String?): Boolean {
