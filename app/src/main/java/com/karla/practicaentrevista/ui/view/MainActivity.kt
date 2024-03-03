@@ -10,7 +10,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.karla.practicaentrevista.ui.view.adapter.DogAdapter
 import com.karla.practicaentrevista.databinding.ActivityMainBinding
 import com.karla.practicaentrevista.ui.viewmodel.DogViewModel
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity(), SearchView.OnQueryTextListener,
     androidx.appcompat.widget.SearchView.OnQueryTextListener {
 
